@@ -61,6 +61,12 @@ if st.session_state.get('show_user_form', False):
             sql.update(st.session_state['user_id'], st.session_state['username'], st.session_state['domain'], st.session_state['role'], st.session_state['goal'], st.session_state['tag'])
             st.success('已更新')
 
+        feedback = st.sidebar.text_area("使用上有什麼需要改善的？")
+        if st.sidebar.button('改善建議'):
+            with open('feedback.txt', 'a') as ff:
+                ff.write(f"{feedback}\n")
+                ff.close()
+            st.sidebar.success('謝謝您')
         
      
 
