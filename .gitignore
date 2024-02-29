@@ -63,6 +63,7 @@ instance/
 # Scrapy stuff:
 .scrapy
 
+
 # Sphinx documentation
 docs/_build/
 
@@ -91,6 +92,9 @@ ENV/
 env.bak/
 venv.bak/
 log/
+
+# Database file
+*.db
 
 # Spyder project settings
 .spyderproject
