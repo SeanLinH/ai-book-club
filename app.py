@@ -83,13 +83,12 @@ if st.session_state.get('show_user_form', False):
 
         
         feedback = st.sidebar.text_area("使用上有什麼需要改善的？")
-        if st.sidebar.button('改善建議'):
+        if st.sidebar.button('提交改善建議'):
             with open('feedback.txt', 'a') as ff:
                 ff.write(f"{feedback}\n")
                 ff.close()
             st.sidebar.success('謝謝您')
         
-
 
 if 'show_qst' in st.session_state:
     # 應用標題

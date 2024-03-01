@@ -2,7 +2,7 @@ import sqlite3
 import uuid
 
 
-
+### 新增用戶資料
 def insert_user(user_id, name, domain, role, goal, tag):
     conn = sqlite3.connect('src/db/database.db')
     c = conn.cursor()
@@ -17,6 +17,7 @@ def insert_user(user_id, name, domain, role, goal, tag):
         print(e)
     conn.close()
 
+### 新增問題到叢集裡
 def insert_qst(question, user_id, state='待解決'):
     qst_id = f'{uuid.uuid4()}'
     conn = sqlite3.connect('src/db/database.db')
@@ -31,7 +32,7 @@ def insert_qst(question, user_id, state='待解決'):
         print(e)
     conn.close()
 
-
+### AI 回答問題
 def ai_response(user_id, question, ans):
     qst_id = f'{uuid.uuid4()}'
     conn = sqlite3.connect('src/db/database.db')
@@ -47,7 +48,7 @@ def ai_response(user_id, question, ans):
     conn.close()
     
     
-    
+### 更新用戶資料
 def update(user_id, name, domain, role, goal, tag):
     conn = sqlite3.connect('src/db/database.db')
     c = conn.cursor()
@@ -63,7 +64,7 @@ def update(user_id, name, domain, role, goal, tag):
     conn.close()    
     
     
-
+### 查詢用戶名是否存在
 def check_username(name):
     conn = sqlite3.connect('src/db/database.db')
     c = conn.cursor()
@@ -75,7 +76,16 @@ def check_username(name):
         return user[0], user[1]
     else:
         return None, None
-        
+
+
+### 抓取用戶問題
+def fetch_user_qst():
+    pass
+
+
+
+def fetch_group_qst():
+    pass
     
     
     
