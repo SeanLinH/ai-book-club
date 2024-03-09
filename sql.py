@@ -1,92 +1,86 @@
 import sqlite3
 import uuid
 
+# 連接資料庫
+conn = sqlite3.connect('src/db/database.db')
+c = conn.cursor()
 
 ### 新增用戶資料
-def insert_user(user_id, name, domain, role, goal, tag):
-    conn = sqlite3.connect('src/db/database.db')
-    c = conn.cursor()
-    print(f"INSERT INTO users VALUES ({user_id}, {name}, {domain}, {role}, {goal}, {tag})")
+def insert_user(user_id, user_pwd, name, domain, role, goal, tag):
     try:
-        c.execute(f"INSERT INTO users (user_id, name, domain, role, goal, tag) VALUES (?, ?, ?, ?, ?, ?);",(user_id, name, domain, role, goal, tag))
+        c.execute("INSERT INTO user (user_id, user_pwd, name, domain, role, goal, tag) VALUES (?, ?, ?, ?, ?, ?, ?);", (user_id, user_pwd, name, domain, role, goal, tag))
         conn.commit()
         print("Command executed successfully")
-
     except Exception as e:
         print("Update Failed")
         print(e)
-    conn.close()
 
 ### 新增問題到叢集裡
-def insert_qst(question, user_id, state='待解決'):
-    qst_id = f'{uuid.uuid4()}'
-    conn = sqlite3.connect('src/db/database.db')
-    c = conn.cursor()
-
+def insert_qst(qst_text, ask_user, state='待解決'):
+    qst_id = str(uuid.uuid4())
     try:
-        c.execute(f"INSERT INTO question_cluster (qst_id, qst_text, ask_user, expert_user, ai_response, expert_response, state) VALUES (?, ?, ?, ?, ?, ?, ?);", (qst_id, question, user_id, None, None, None, '待解決'))
+        c.execute("INSERT INTO question_cluster (qst_id, qst_text, ask_user, state) VALUES (?, ?, ?, ?);", (qst_id, qst_text, ask_user, state))
         conn.commit()
         print("Command executed successfully")
     except Exception as e:
         print("Update Failed")
         print(e)
-    conn.close()
+
+### 新增專家回覆
+def insert_expert_answer(qst_id, expert_user, expert_response):
+    ans_id = str(uuid.uuid4())
+    try:
+        c.execute("INSERT INTO expert_answer (ans_id, qst_id, expert_user, expert_response) VALUES (?, ?, ?, ?);", (ans_id, qst_id, expert_user, expert_response))
+        conn.commit()
+        print("Command executed successfully")
+    except Exception as e:
+        print("Update Failed")
+        print(e)
 
 ### AI 回答問題
-def ai_response(user_id, question, ans):
-    qst_id = f'{uuid.uuid4()}'
-    conn = sqlite3.connect('src/db/database.db')
-    c = conn.cursor()
-
+def insert_ai_answer(qst_id, user_id, ai_response):
+    ans_id = str(uuid.uuid4())
     try:
-        c.execute(f"INSERT INTO question_cluster (qst_id, qst_text, ask_user, expert_user, ai_response, expert_response, state) VALUES (?, ?, ?, ?, ?, ?, ?);", (qst_id, question, None, user_id, ans, None, '已解決'))
+        c.execute("INSERT INTO ai_answer (ans_id, qst_id, user_id, ai_response) VALUES (?, ?, ?, ?);", (ans_id, qst_id, user_id, ai_response))
         conn.commit()
         print("Command executed successfully")
     except Exception as e:
         print("Update Failed")
         print(e)
-    conn.close()
-    
-    
+
 ### 更新用戶資料
-def update(user_id, name, domain, role, goal, tag):
-    conn = sqlite3.connect('src/db/database.db')
-    c = conn.cursor()
-    
+def update_user(user_id, user_pwd, name, domain, role, goal, tag):
     try:
-        c.execute(f"UPDATE users SET name = ?, domain = ?, role = ?, goal = ?, tag = ? WHERE user_id = ?",(name, domain, role, goal, tag, user_id))
+        c.execute("UPDATE user SET user_pwd = ?, name = ?, domain = ?, role = ?, goal = ?, tag = ? WHERE user_id = ?;", (user_pwd, name, domain, role, goal, tag, user_id))
         conn.commit()
         print("Command executed successfully")
-
     except Exception as e:
         print("Update Failed")
         print(e)
-    conn.close()    
-    
-    
+
 ### 查詢用戶名是否存在
 def check_username(name):
-    conn = sqlite3.connect('src/db/database.db')
-    c = conn.cursor()
-    c.execute("SELECT user_id, goal FROM users WHERE name = ? ORDER BY timestamp DESC;", (name,))
+    c.execute("SELECT user_id, goal FROM user WHERE name = ? ORDER BY timestamp DESC;", (name,))
     user = c.fetchone()
-    conn.commit()
-    conn.close()
     if user:
         return user[0], user[1]
     else:
         return None, None
 
-
 ### 抓取用戶問題
-def fetch_user_qst():
-    pass
+def fetch_user_qst(user_id):
+    c.execute("SELECT qst_id, qst_text FROM question_cluster WHERE ask_user = ?;", (user_id,))
+    questions = c.fetchall()
+    return questions
 
+### 抓取群組問題
+def fetch_group_qst(state=None):
+    if state:
+        c.execute("SELECT qst_id, qst_text FROM question_cluster WHERE state = ?;", (state,))
+    else:
+        c.execute("SELECT qst_id, qst_text FROM question_cluster;")
+    questions = c.fetchall()
+    return questions
 
-
-def fetch_group_qst():
-    pass
-    
-    
-    
-
+# 關閉資料庫連線
+conn.close()
