@@ -82,5 +82,17 @@ def fetch_group_qst(state=None):
     questions = c.fetchall()
     return questions
 
+
+
+def fetch_user_qst(user_id):
+    c.execute("SELECT qst_id, qst_text FROM question_cluster WHERE ask_user = ?;", (user_id,))
+    questions = c.fetchall()
+    return questions, count, datetime
+
+
+
+
+
+
 # 關閉資料庫連線
 conn.close()

@@ -1,0 +1,3 @@
+[client]
+# 將預設會顯示的 showSidebarNavigation 隱藏起來
+showSidebarNavigation = false
