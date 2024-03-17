@@ -1,9 +1,10 @@
 
 # Scheme
 ## Table1 [user]
-- user_id : 使用者不重複流水號(不可為none)
-- user_pwd: 使用者密碼
-- name: 使用者姓名
+- user_id : 使用者帳號不重複流水號(不可為none)
+- pwd: 使用者密碼
+- name: 使用者自定義的名稱
+- email: 使用者email
 - domain: 使用者專業領域
 - role: 使用者擔任角色
 - goal: 使用者目標
