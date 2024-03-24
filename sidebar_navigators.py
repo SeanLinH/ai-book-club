@@ -5,11 +5,11 @@ def authenticated_nav_user(expanded):
     """
     已經登入後的 `使用者` 導航欄位顯示
     """
-    with st.expander("Book Club User", expanded=expanded):
-        st.page_link("./pages/UserMain.py", label="會員主頁")
-        st.page_link("./pages/UserQuestions.py", label="我的提問")
-        st.page_link("./pages/UserQuestionLobby.py", label="等你回答")
-        st.page_link("./pages/UserJoinBookClub.py", label="加入讀書會")
+    # with st.expander("Book Club User", expanded=expanded):
+    #     st.page_link("./pages/UserMain.py", label="會員主頁")
+    #     st.page_link("./pages/UserQuestions.py", label="我的提問")
+    #     st.page_link("./pages/UserQuestionLobby.py", label="等你回答")
+    #     st.page_link("./pages/UserJoinBookClub.py", label="加入讀書會")
 
 def authenticated_nav_manager(expanded):
     """
@@ -31,14 +31,13 @@ def login_btn():
     
 def logout_btn():
     """登出按鈕"""
-    with st.expander("登出選項", expanded=False):
-        logout_btn = st.button(
-            ":green[登出]", 
-            use_container_width=True)
-        
-        if logout_btn:
-            st.session_state["user"] = False
-            st.switch_page("./AIBookClub.py")
+    logout_btn = st.button(
+        ":green[登出]", 
+        use_container_width=True)
+    
+    if logout_btn:
+        st.session_state["user"] = False
+        st.switch_page("./AIBookClub.py")
 
 
 def navigators_generator(
