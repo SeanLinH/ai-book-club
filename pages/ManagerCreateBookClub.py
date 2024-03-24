@@ -3,8 +3,14 @@ import time
 from sidebar_navigators import \
     navigators_generator, \
     navigators_logout_generator
-
 import sql
+import random
+import string
+
+# 生成一個隨機的8個英文字母的字符串
+
+
+
 #
 ## Session state
 #
@@ -13,7 +19,9 @@ permissible_keys = {
     "user", 
     "user_id",
     "user_info",
-    "group_list"
+    "group_list",
+    "user_email",
+    "topic"
 }
 
 for key in st.session_state.keys():
@@ -70,11 +78,10 @@ build_group = st.button("確認建立")
 
 if build_group:
     print("", st.session_state['user_id'])
-    sql.update_user_group(user_id=st.session_state['user_id'], group_id=bookclub_name)
-    time.sleep(1)
-    print("sql FETCH:", sql.fetch_user_group(st.session_state['user_id']))
-    st.session_state['group_list'] = sql.fetch_user_group(st.session_state['user_id'])
-    print(sql.fetch_user_group(st.session_state['user_id']))
+    random_code = ''.join(random.choices(string.ascii_letters, k=8))
+    msg = sql.update_user_group(user_id=st.session_state['user_id'], group_name=bookclub_name, group_id=random_code)
+    st.session_state['group_list'], _ = sql.fetch_user_group(st.session_state['user_id'])
+    
     st.success("成功建立讀書會")
     time.sleep(2)
     st.rerun()

@@ -10,7 +10,7 @@ def insert_user(user_id, pwd,email, name):
     conn = sqlite3.connect('src/db/database.db')
     c = conn.cursor()
     try:
-        c.execute("INSERT INTO user (user_id, pwd, email, name, group_id) VALUES (?, ?, ?, ?, ?);", (user_id, pwd, email, name, ""))
+        c.execute("INSERT INTO user (user_id, pwd, email, name, group_id, group_name) VALUES (?, ?, ?, ?, ?, ?);", (user_id, pwd, email, name, "", ""))
         conn.commit()
         print("Command executed successfully")
         conn.close()
@@ -18,6 +18,7 @@ def insert_user(user_id, pwd,email, name):
     except Exception as e:
         print("Update Failed")
         print(e)
+        conn.close()
         return False, e
 
 ### 新增問題到叢集裡
@@ -98,49 +99,57 @@ def fetch_user_group(user_id) -> list:
     c = conn.cursor()
 
     if is_email_valid(user_id):
-        c.execute("SELECT group_id FROM user WHERE email = ?;", (user_id,))
+        c.execute("SELECT group_name, group_id FROM user WHERE email = ?;", (user_id,))
     else:
-        c.execute("SELECT group_id FROM user WHERE user_id = ?;", (user_id,))
-    group_id = c.fetchall()
-    group_id = group_id[0][0].split(',')
+        c.execute("SELECT group_name, group_id FROM user WHERE user_id = ?;", (user_id,))
+    group = c.fetchall()
+    group_name = group[0][0].split(",")
+    group_id = group[0][1].split(",")
     conn.close()
-    return group_id
+    return group_name, group_id
 
 
 ### 先抓用戶的群組id，再更新用戶的群組id
-def update_user_group(user_id, group_id):
+def update_user_group(user_id, group_name, group_id):
     conn = sqlite3.connect('src/db/database.db')
     c = conn.cursor()
     # 抓取用戶user_id 的群組id
-    group_list = fetch_user_group(user_id)
+    group_list, group_id_lst = fetch_user_group(user_id)
 
     if group_list[0] == "":
-        group_list = group_id
+        group_list = group_name
+        group_id_lst = group_id
+
 
     else:
-        if group_id in group_list:
+        if group_id in group_id_lst:
             group_list = ",".join(group_list)
-            print('此群組已創立')
+            group_id_lst = ",".join(group_id)
+            conn.close()
+            return '此群組已創立'
         else:
-            group_list.append(group_id)
-            print("update:", group_list)
+            group_list.append(group_name)
             group_list = ",".join(group_list)
+            group_id_lst.append(group_id)
+            group_id_lst = ",".join(group_id_lst)
             
-    print("update->:", group_list)
-
 
     try:
         if is_email_valid(user_id):
-            c.execute("UPDATE user SET group_id = ? WHERE email = ?;", (group_list, user_id))
+            c.execute("UPDATE user SET group_name = ?, group_id = ? WHERE email = ?;", (group_list, group_id_lst, user_id))
         else:
-            c.execute("UPDATE user SET group_id = ? WHERE user_id = ?;", (group_list, user_id))
+            c.execute("UPDATE user SET group_name = ?, group_id = ? WHERE user_id = ?;", (group_list, group_id_lst, user_id))
         conn.commit()
         print("Command executed successfully")
+        conn.close()
+        return '建立成功'
 
     except Exception as e:
         print("Update Failed")
         print(e)
-    conn.close()
+        conn.close()
+        return f'建立失敗:{e}'
+    
 
 
 ### update user 的domain, role, goal,tag

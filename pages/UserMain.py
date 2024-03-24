@@ -12,7 +12,8 @@ permissible_keys = {
     "user_id",
     "user_info",
     "group_list",
-    "user_email"
+    "user_email",
+    "topic"
 }
 
 for key in st.session_state.keys():

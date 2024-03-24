@@ -1,5 +1,24 @@
 import streamlit as st
+import time
+from sidebar_navigators import \
+    navigators_generator, \
+    navigators_logout_generator
 
+## session state
+permissible_keys = {
+    "user", 
+    "user_id",
+    "user_info",
+    "group_list",
+    "user_email"
+}
+
+for key in st.session_state.keys():
+    if key not in permissible_keys:
+        st.session_state.pop(key)
+
+
+## Meta
 title = "LLM"
 if title =="":
     title="大型語言模型讀書會"
@@ -70,3 +89,6 @@ if 'questions' in st.session_state:
                         text += "\n"
                     text += chunk.choices[0].delta.content
                     container.text(text)
+
+
+

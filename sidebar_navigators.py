@@ -6,29 +6,24 @@ import sql
 
 
 
-def test_onchange():
-    pass
-
-
 def authenticated_nav_user(expanded):
     """
     已經登入後的 `使用者` 導航欄位顯示
     """
+    global group_value
 
     group_list = st.session_state['group_list']
-    group_value = st.selectbox("選擇群組", group_list, on_change=test_onchange)
-    if group_value =="":
-        pass
-        # st.switch_page("./pages/blankMain.py")
-    else:
-        pass
+    topic = st.selectbox("選擇群組", group_list)
+    st.session_state['topic'] = topic
+    
+    st.page_link("./pages/UserMain.py", label="會員主頁")
+    st.page_link("./pages/UserQuestionLobby.py", label="提問大廳")
 
 
-    with st.expander("Book Club User", expanded=expanded):
-        st.page_link("./pages/UserMain.py", label="會員主頁")
-        st.page_link("./pages/UserQuestions.py", label="我的提問")
-        st.page_link("./pages/UserQuestionLobby.py", label="等你回答")
-        st.page_link("./pages/UserJoinBookClub.py", label="加入讀書會")
+    # with st.expander("Book Club User", expanded=expanded):
+    #     st.page_link("./pages/UserQuestions.py", label="我的提問")
+    #     st.page_link("./pages/UserQuestionLobby.py", label="等你回答")
+    #     st.page_link("./pages/UserJoinBookClub.py", label="加入讀書會")
 
 def authenticated_nav_info():
     """
