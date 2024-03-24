@@ -1,23 +1,75 @@
 import streamlit as st
 import time
+import sql
+
+## session state
+
+
+
+def test_onchange():
+    pass
+
 
 def authenticated_nav_user(expanded):
     """
     已經登入後的 `使用者` 導航欄位顯示
     """
-    # with st.expander("Book Club User", expanded=expanded):
-    #     st.page_link("./pages/UserMain.py", label="會員主頁")
-    #     st.page_link("./pages/UserQuestions.py", label="我的提問")
-    #     st.page_link("./pages/UserQuestionLobby.py", label="等你回答")
-    #     st.page_link("./pages/UserJoinBookClub.py", label="加入讀書會")
+
+    group_list = st.session_state['group_list']
+    group_value = st.selectbox("選擇群組", group_list, on_change=test_onchange)
+    if group_value =="":
+        pass
+        # st.switch_page("./pages/blankMain.py")
+    else:
+        pass
+
+
+    with st.expander("Book Club User", expanded=expanded):
+        st.page_link("./pages/UserMain.py", label="會員主頁")
+        st.page_link("./pages/UserQuestions.py", label="我的提問")
+        st.page_link("./pages/UserQuestionLobby.py", label="等你回答")
+        st.page_link("./pages/UserJoinBookClub.py", label="加入讀書會")
+
+def authenticated_nav_info():
+    """
+    已經登入後顯示用戶的屬性設定
+    """
+    st.session_state['show_user_form'] = True
+    if st.session_state.get('show_user_form', False):
+        with st.sidebar.form(key='user_info_form'):
+            st.write("用戶資料表單")
+            username = st.text_input("你的名字", placeholder='王大強')
+            domain = st.text_input("你的專業領域是什麼？", placeholder='智慧製造')
+            role = st.selectbox("你在這個讀書會擔任什麼角色?", ['UI/UX設計師','前端工程師', '後端工程師', 'Data Scientist', 'AI工程師'])
+            goal = st.text_area("你的學習目標?", placeholder='我希望可以成為領域專家...')
+            submit_button = st.form_submit_button('提交')
+            
+            if submit_button:
+                if username == '':
+                    username='王大強'
+                if domain == '':
+                    domain = '知識水平在大學的一般大眾'
+                if role == '':
+                    role = 'AI工程師'
+                if goal == '':
+                    goal = '增進自己的知識水平'
+
+                st.session_state['username'] = username
+                st.session_state['domain'] = domain
+                st.session_state['profession'] = role
+                st.session_state['goal'] = goal
+                st.success('資料已提交')
+                print(sql.fetch_user_info)
+                sql.update_user_info(user_id=st.session_state['user_id'], username=username, domain=domain, role=role, goal=goal)
+
 
 def authenticated_nav_manager(expanded):
     """
     已經登入後的 `讀書會管理員` 導航欄位顯示
     """
-    with st.expander("Book Club Manager", expanded=expanded):
-        st.page_link("./pages/ManagerMain.py", label="讀書會管理員主頁")
-        st.page_link("./pages/ManagerCreateBookClub.py", label="新建讀書會")
+    with st.expander("資料上傳", expanded=expanded):
+        st.page_link("./pages/ManagerMain.py", label="更新讀書會教材")
+        st.page_link("./pages/ManagerCreateBookClub.py", label=":orange[新建讀書會]")
 
 def login_btn():
     """登入頁面跳轉按鈕"""
@@ -28,6 +80,16 @@ def login_btn():
     
     if btn_to_login:
         st.switch_page("./pages/Login.py")
+
+def register_btn():
+    """登入頁面跳轉按鈕"""
+    btn_to_login = st.button(
+        "註冊", 
+        use_container_width=True, 
+        help="還沒註冊嗎？")
+    
+    if btn_to_login:
+        st.switch_page("./pages/Register.py")
     
 def logout_btn():
     """登出按鈕"""
@@ -60,9 +122,13 @@ def navigators_generator(
     if st.session_state["user"]:
         authenticated_nav_user(expanded_nav_user)
         authenticated_nav_manager(expanded_nav_manager)
+        authenticated_nav_info()
     else:
-        st.page_link("./pages/Register.py", label="會員註冊")
-        login_btn()
+        col1, col2 = st.columns([1, 1])
+        with col1:
+            register_btn()
+        with col2:
+            login_btn()
     
 def navigators_logout_generator():
     if st.session_state["user"]:

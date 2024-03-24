@@ -27,6 +27,7 @@ permissible_keys = {"user", "user_id"}
 
 if "user" not in st.session_state:
     st.session_state["user"] = False
+    st.session_state['group_list'] = []
 
 for key in st.session_state.keys():
     if key not in permissible_keys:
@@ -81,6 +82,9 @@ AI智能讀書會平台致力於打造一個智能化、互動性強的學習社
 with st.sidebar:
     st.write("# Welcome")
     st.page_link("./AIBookClub.py", label="智能讀書會主頁")
+    # st.page_link("./app.py", label="知識問答")
+    
+    # dropdown_value = st.selectbox("Select an option", ["Option 1", "Option 2", "Option 3"])
     navigators_generator()
     navigators_logout_generator()
 
@@ -90,7 +94,7 @@ with st.sidebar:
 #
 
 ### test use modules and functions
-from test_utils import change_user_state
+from utils import change_user_state
 
 if st.button(":green[change user state]"):
     change_user_state(st.session_state)
