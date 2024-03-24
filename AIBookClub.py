@@ -2,7 +2,7 @@ import streamlit as st
 from sidebar_navigators import \
     navigators_generator, \
     navigators_logout_generator
-
+ 
 
 #
 ## Session state
@@ -25,12 +25,13 @@ from sidebar_navigators import \
 
 permissible_keys = {"user", "user_id"}
 
+if "user" not in st.session_state:
+    st.session_state["user"] = False
+
 for key in st.session_state.keys():
     if key not in permissible_keys:
         st.session_state.pop(key)
 
-if "user" not in st.session_state:
-    st.session_state["user"] = False
 
 #
 ## Meta

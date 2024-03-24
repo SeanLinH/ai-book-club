@@ -2,10 +2,22 @@ import time
 import streamlit as st
 from typing import *
 from sidebar_navigators import navigators_generator
+import sql
+import re
 
+# 確認電子郵件地址是否有效
+def is_email_valid(email):
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    if re.match(pattern, email):
+        return True
+    else:
+        return False
+    
 # TODO (Database API): 這邊需要確認帳號密碼匹配的方法
 def login_checking(account: str, password: str) -> bool:
     return True
+
+
 
 #
 ## Session state
@@ -32,16 +44,22 @@ with st.container(border=True):
         "密碼",
         type="password"
     )
-
+    
+    
     login_check = st.button("登入", use_container_width=True)
     if login_check:
-        if login_checking(account, password):
-            st.success("登入成功， 3 秒後導到您的主頁")
-            time.sleep(3)
+        if is_email_valid(account):
+            login, msg = sql.check_username(email=account, pwd=password)
+        else:
+            login, msg = sql.check_username(user_id=account, pwd=password)
+
+        if login:
+            st.success(msg)
+            time.sleep(2)
             st.session_state["user"] = True
             st.switch_page("./pages/UserMain.py")
         else:
-            st.error("帳號或密碼輸入不正確")
+            st.error(msg)
         
 
 #

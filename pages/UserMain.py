@@ -36,7 +36,7 @@ st.set_page_config(
 #
 
 # 頁面標題開頭
-st.markdown(f"# Hi! {st.session_state["user_info"]["user_name"]}")
+# st.markdown(f'# Hi! {st.session_state["user_info"]["user_name"]}')
 
 # 我的學習歷程
 st.markdown("## 我的學習歷程")

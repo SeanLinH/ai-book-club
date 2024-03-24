@@ -92,10 +92,9 @@ ENV/
 env.bak/
 venv.bak/
 log/
-src/
 
 # Database file
-# *.db
+*.db
 
 # Spyder project settings
 .spyderproject
