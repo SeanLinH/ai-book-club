@@ -2,6 +2,7 @@ import streamlit as st
 from sidebar_navigators import \
     navigators_generator, \
     navigators_logout_generator
+
  
 
 #
@@ -29,11 +30,14 @@ if "user" not in st.session_state:
     st.session_state["user"] = False
     st.session_state['group_list'] = []
 
+# for key in st.session_state.keys():
+#     if key not in permissible_keys:
+#         st.session_state.pop(key)
+
+
 for key in st.session_state.keys():
     if key not in permissible_keys:
         st.session_state.pop(key)
-
-
 #
 ## Meta
 #
@@ -103,3 +107,4 @@ if st.button(":green[change user state]"):
 on_toggle_btn = st.toggle(":red[See Session state]")
 if on_toggle_btn:
     st.write(f"Now session state is: :red[{st.session_state}]")
+

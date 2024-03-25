@@ -137,3 +137,4 @@ with st.sidebar:
     st.page_link("./AIBookClub.py", label="智能讀書會主頁")
     navigators_generator(expanded_nav_user=False)
     navigators_logout_generator()
+

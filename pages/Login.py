@@ -5,8 +5,6 @@ from sidebar_navigators import navigators_generator
 import sql
 import re
 from utils import is_email_valid
-
-    
 # TODO (Database API): 這邊需要確認帳號密碼匹配的方法
 def login_checking(account: str, password: str) -> bool:
     return True

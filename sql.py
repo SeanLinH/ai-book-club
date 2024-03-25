@@ -108,6 +108,49 @@ def fetch_user_group(user_id) -> list:
     conn.close()
     return group_name, group_id
 
+def join_user_group(user_id, group_id):
+    conn = sqlite3.connect('src/db/database.db')
+    c = conn.cursor()
+    c.execute("SELECT group_id, group_name FROM user")
+    group = c.fetchall()
+    new_group_name = ''
+    for groupId, groupName in group:
+        print(groupId)
+        lst = groupId.split(',')
+        if group_id in lst:
+            idx = lst.index(group_id)
+            new_group_name = groupName.split(',')[idx]
+            break
+    if new_group_name == "":
+        return '此群組不存在'
+    
+    group_list, group_id_lst = fetch_user_group(user_id)
+    if group_id in group_id_lst:
+        return '已加入此群組'
+    else:
+        
+        if group_list[0] == "":
+            group_list = new_group_name
+            group_id_lst = group_id
+        else:
+            group_list.append(new_group_name)
+            group_list = ",".join(group_list)
+            group_id_lst.append(group_id)
+            group_id_lst = ",".join(group_id_lst)
+        try:
+            if is_email_valid(user_id):
+                c.execute("UPDATE user SET group_name = ?, group_id = ? WHERE email = ?;", (group_list, group_id_lst, user_id))
+            else:
+                c.execute("UPDATE user SET group_name = ?, group_id = ? WHERE user_id = ?;", (group_list, group_id_lst, user_id))
+            conn.commit()
+            print("Command executed successfully")
+            conn.close()
+            return '加入成功'
+        except Exception as e:
+            print("Update Failed")
+            print(e)
+            conn.close()
+            return f'加入失敗:{e}'
 
 def drop_user_group(user_id, group_name, group_id):
     conn = sqlite3.connect('src/db/database.db')
@@ -122,7 +165,23 @@ def drop_user_group(user_id, group_name, group_id):
             group_list = ",".join(group_list)
             group_id_lst.remove(group_id)
             group_id_lst = ",".join(group_id_lst)
+            try:
+                if is_email_valid(user_id):
+                    c.execute("UPDATE user SET group_name = ?, group_id = ? WHERE email = ?;", (group_list, group_id_lst, user_id))
+                else:
+                    c.execute("UPDATE user SET group_name = ?, group_id = ? WHERE user_id = ?;", (group_list, group_id_lst, user_id))
+                conn.commit()
+                print("Command executed successfully")
+                conn.close()
+                return '已退出群組!'
+
+            except Exception as e:
+                print("Update Failed")
+                print(e)
+                conn.close()
+                return f'更新失敗:{e}'
         else:
+            
             return '此群組不存在'
     
 ### 先抓用戶的群組id，再更新用戶的群組id

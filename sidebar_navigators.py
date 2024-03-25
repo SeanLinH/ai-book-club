@@ -2,7 +2,6 @@ import streamlit as st
 import time
 import sql
 
-
 def authenticated_nav_user(expanded):
     """
     已經登入後的 `使用者` 導航欄位顯示
@@ -152,4 +151,3 @@ def navigators_openaikey_generator():
                 st.success("設置成功! 請稍等...")
                 time.sleep(3)
             st.rerun()
-    

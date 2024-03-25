@@ -22,6 +22,7 @@ for key in st.session_state.keys():
     if key not in permissible_keys:
         st.session_state.pop(key)
 
+
 if "user_info" not in st.session_state:
     st.session_state["user_info"] = {
         "user_name": st.session_state["user_id"],
@@ -88,3 +89,4 @@ with st.sidebar:
 on_toggle_btn = st.toggle(":red[See Session state]")
 if on_toggle_btn:
     st.write(f"Now session state is: :red[{st.session_state}]")
+

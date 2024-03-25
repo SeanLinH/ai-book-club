@@ -108,39 +108,62 @@ if button_materials:
         st.rerun()
     
 
-with st.expander("創建讀書會群組"):        
-    new_bookclub_name = st.text_input("輸入讀書會的名稱", placeholder="ex.大型語言模型研究, 產品開發知識")
-    build_group = st.button("確認建立")
+with st.expander("創建讀書會群組", expanded=True):        
+    col1, col2 = st.columns([1, 1])
+    with col1:
+        new_bookclub_name = st.text_input("輸入讀書會的名稱", placeholder="ex.大型語言模型研究, 產品開發知識")
+        build_group = st.button("確認建立")
 
-    if build_group:
-        if new_bookclub_name == "":
-            st.warning("請輸入讀書會名稱")
-        else:
-            random_code = ''.join(random.choices(string.ascii_letters, k=8))
-            msg = sql.update_user_group(user_id=st.session_state['user_id'], group_name=new_bookclub_name, group_id=random_code)
-            st.session_state['group_list'], st.session_state['group_id_list'] = sql.fetch_user_group(st.session_state['user_id'])
-            st.success("成功建立讀書會")
-            time.sleep(2)
-            # st.rerun()
-            # st.switch_page("./pages/UserMain.py")
-with st.expander("推出群組"):
-    
-    build_group = st.button(f"退出當前群組: {bookclub_name}")
-    
-   
+        if build_group:
+            if new_bookclub_name == "":
+                st.warning("請輸入讀書會名稱")
+            else:
+                random_code = ''.join(random.choices(string.ascii_letters, k=8))
+                msg = sql.update_user_group(user_id=st.session_state['user_id'], group_name=new_bookclub_name, group_id=random_code)
+                st.session_state['group_list'], st.session_state['group_id_list'] = sql.fetch_user_group(st.session_state['user_id'])
+                st.success("成功建立讀書會")
+                time.sleep(2)
+                # st.rerun()
+                # st.switch_page("./pages/UserMain.py")
+    with col2:
+        join_group = st.text_input("輸入邀請群組碼", placeholder="NiAimKmy")
+        join = st.button("加入群組")
 
+        if join:
+            if join_group == "":
+                st.warning("請輸入群組碼")
+            else:
+                msg = sql.join_user_group(user_id=st.session_state['user_id'], group_id=join_group)
+                st.session_state['group_list'], st.session_state['group_id_list'] = sql.fetch_user_group(st.session_state['user_id'])
+                if msg == "成功加入群組":
+                    st.success(msg)
+                else:
+                    st.warning(msg)
+                time.sleep(2)
+                st.rerun()
+                # st.switch_page("./pages/UserMain.py")
+            
+    
+
+
+with st.expander("退出群組"):
+    build_group = st.button(f"退出當前群組: :red[{bookclub_name}]")
     if build_group:
-        group_list = st.session_state['group_list']
-        group_id_lst = st.session_state['group_id_list']
-        idx = group_list.index(bookclub_name)
-        group_list.pop(idx)
-        group_id_lst.pop(idx)
-        msg = sql.update_user_group(user_id=st.session_state['user_id'], group_name=group_list, group_id=group_id_lst)
+        # group_list = st.session_state['group_list']
+        # group_id_lst = st.session_state['group_id_list']
+        # idx = group_list.index(bookclub_name)
+        # group_list.pop(idx)
+        # group_id_lst.pop(idx)
+        group_id = st.session_state['group_id']
+        group_name = st.session_state['topic']
+        msg = sql.drop_user_group(user_id=st.session_state['user_id'], group_name=group_name, group_id=group_id)
         st.session_state['group_list'], st.session_state['group_id_list'] = sql.fetch_user_group(st.session_state['user_id'])
-        if msg == "建立成功":
-            st.success('已退出群組！')
-        else:
-            st.warning('退出失敗')
+        if msg == "已退出群組!":
+            st.success(msg)
+        else:   
+            st.warning(msg)
+        time.sleep(2)
+        st.rerun()
 
 
 #
@@ -151,4 +174,4 @@ with st.sidebar:
     st.write    ("# 新建讀書會")
     # st.page_link("./AIBookClub.py", label="智能讀書會主頁")
     navigators_generator(expanded_nav_user=False)
-    navigators_logout_generator()            
+    navigators_logout_generator()       
