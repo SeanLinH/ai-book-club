@@ -12,6 +12,8 @@ permissible_keys = {
     "user_id",
     "user_info",
     "group_list",
+    "group_id_list",
+    "group_id",
     "user_email",
     "topic"
 }
@@ -22,8 +24,10 @@ for key in st.session_state.keys():
 
 if "user_info" not in st.session_state:
     st.session_state["user_info"] = {
-        "user_name": "Jack (Default)",
-        "user_club_join": ["預設1讀書會", "預設2讀書會"]
+        "user_name": st.session_state["user_id"],
+        "domain": "智慧製造",
+        "role": "AI工程師",
+        "goal": "我希望可以增進自己的知識水平"
     }
 
 #

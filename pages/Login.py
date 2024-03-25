@@ -52,9 +52,12 @@ with st.container(border=True):
         if login:
             st.success(msg)
             st.session_state["user"] = True
-            group_list, _ = sql.fetch_user_group(account)
+            group_list, group_id = sql.fetch_user_group(account)
             time.sleep(2)
             st.session_state["group_list"] = group_list
+            st.session_state['topic'] = group_list[0]
+            st.session_state['group_id_list'] = group_id
+            st.session_state['group_id'] = group_id[0]
             st.switch_page("./pages/UserMain.py")
             
         else:

@@ -12,6 +12,8 @@ permissible_keys = {
     "user_id",
     "user_info",
     "group_list",
+    "group_id_list",
+    "group_id",
     "user_email",
     "topic"
 }

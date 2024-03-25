@@ -2,22 +2,25 @@ import streamlit as st
 import time
 import sql
 
-## session state
-
-
 
 def authenticated_nav_user(expanded):
     """
     已經登入後的 `使用者` 導航欄位顯示
     """
-    global group_value
 
     group_list = st.session_state['group_list']
     topic = st.selectbox("選擇群組", group_list)
-    st.session_state['topic'] = topic
-    
+    group_id = group_list.index(topic)
+
+    if topic != st.session_state['topic']:
+        st.session_state['topic'] = topic
+        st.session_state['group_id'] = st.session_state['group_id_list'][group_id]
+        st.rerun()
+    print(f" group_id: {st.session_state['group_id']}, groupName:{topic}")    
     st.page_link("./pages/UserMain.py", label="會員主頁")
     st.page_link("./pages/UserQuestionLobby.py", label="提問大廳")
+
+    
 
 
     # with st.expander("Book Club User", expanded=expanded):
@@ -29,11 +32,12 @@ def authenticated_nav_info():
     """
     已經登入後顯示用戶的屬性設定
     """
+    print(st.session_state['user_info'])
     st.session_state['show_user_form'] = True
     if st.session_state.get('show_user_form', False):
         with st.sidebar.form(key='user_info_form'):
             st.write("用戶資料表單")
-            username = st.text_input("你的名字", placeholder='王大強')
+            username = st.text_input("你的名字", value=st.session_state['user_id'],placeholder='王大強')
             domain = st.text_input("你的專業領域是什麼？", placeholder='智慧製造')
             role = st.selectbox("你在這個讀書會擔任什麼角色?", ['UI/UX設計師','前端工程師', '後端工程師', 'Data Scientist', 'AI工程師'])
             goal = st.text_area("你的學習目標?", placeholder='我希望可以成為領域專家...')
@@ -62,9 +66,9 @@ def authenticated_nav_manager(expanded):
     """
     已經登入後的 `讀書會管理員` 導航欄位顯示
     """
-    with st.expander("資料上傳", expanded=expanded):
-        st.page_link("./pages/ManagerMain.py", label="更新讀書會教材")
-        st.page_link("./pages/ManagerCreateBookClub.py", label=":orange[新建讀書會]")
+    # with st.expander("資料上傳", expanded=expanded):
+    #     st.page_link("./pages/ManagerMain.py", label="更新讀書會教材")
+    st.page_link("./pages/ManagerCreateBookClub.py", label=":orange[上傳教材/創建群組]")
 
 def login_btn():
     """登入頁面跳轉按鈕"""

@@ -16,6 +16,8 @@ permissible_keys = {
     "user_id",
     "user_info",
     "group_list",
+    "group_id_list",
+    "group_id",
     "user_email",
     "topic",
     "questions_list"
@@ -274,7 +276,7 @@ else:
 
 with st.sidebar:
     st.write("# 等你回答")
-    st.page_link("./AIBookClub.py", label="智能讀書會主頁")
+    # st.page_link("./AIBookClub.py", label="智能讀書會主頁")
     navigators_generator()
     navigators_logout_generator()
 
