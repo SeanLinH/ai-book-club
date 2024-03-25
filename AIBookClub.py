@@ -3,7 +3,8 @@ from sidebar_navigators import \
     navigators_generator, \
     navigators_logout_generator
 
- 
+
+
 
 #
 ## Session state
