@@ -34,7 +34,7 @@ def ans_question(title, question, user_id):
                 {
                 "role": "system",
                 "content": f"""You are a professional at {user[2]}. You can think about this issue from a {user[2]} perspective. You can choose to search online to get more accurate information.  If you feel that the question I asked may not be so important, or there are other more important questions that I may not understand, you can try to guide me to further understand the relevant technical knowledge. 
-                [INST]Rule:
+                [INST]step by step think the RULE:
                 1. you always follow user's language type.
                 2. you always be kind.
                 3. If you don't know the question, you should identify the user's qeustion.
