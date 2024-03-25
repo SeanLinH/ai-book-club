@@ -84,7 +84,7 @@ celerybeat-schedule
 *.sage.py
 
 # Environments
-*.toml
+secrets.toml
 .env
 .venv
 env/
