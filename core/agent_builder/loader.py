@@ -44,7 +44,6 @@ def _get_builder_agent_tools(agent_builder: RAGAgentBuilder) -> List[FunctionToo
     """Get list of builder agent tools to pass to the builder agent."""
     # see if metaphor api key is set, otherwise don't add web tool
     # TODO: refactor this later
-    print("\n\n", st.secrets, "\n\n")
 
     if "metaphor_key" in st.secrets:
         fns: List[Callable] = [

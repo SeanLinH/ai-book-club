@@ -45,7 +45,7 @@ from llama_index.chat_engine.types import (
 )
 from llama_index.llms.base import ChatResponse
 from typing import Generator
-import os
+
 
 class RAGParams(BaseModel):
     """RAG parameters.
@@ -80,12 +80,12 @@ def _resolve_llm(llm_str: str) -> LLM:
     # - if there is, resolve it
     tokens = llm_str.split(":")
     if len(tokens) == 1:
-        os.environ["OPENAI_API_KEY"] = os.environ.get("OPENAI_API_KEY")
+        os.environ["OPENAI_API_KEY"] = st.secrets.openai_key
         llm: LLM = OpenAI(model=llm_str)
     elif tokens[0] == "local":
         llm = resolve_llm(llm_str)
     elif tokens[0] == "openai":
-        os.environ["OPENAI_API_KEY"] = os.environ.get("OPENAI_API_KEY")
+        os.environ["OPENAI_API_KEY"] = st.secrets.openai_key
         llm = OpenAI(model=tokens[1])
     elif tokens[0] == "anthropic":
         os.environ["ANTHROPIC_API_KEY"] = st.secrets.anthropic_key
@@ -437,7 +437,7 @@ def construct_mm_agent(
     # first resolve llm and embedding model
     embed_model = resolve_embed_model(rag_params.embed_model)
     # TODO: use OpenAI for now
-    os.environ["OPENAI_API_KEY"] = os.environ.get("OPENAI_API_KEY")
+    os.environ["OPENAI_API_KEY"] = st.secrets.openai_key
     openai_mm_llm = OpenAIMultiModal(model="gpt-4-vision-preview", max_new_tokens=1500)
 
     # first let's index the data with the right parameters
