@@ -15,8 +15,7 @@ def authenticated_nav_user(expanded):
     if topic != st.session_state['topic']:
         st.session_state['topic'] = topic
         st.session_state['group_id'] = st.session_state['group_id_list'][group_id]
-        st.rerun()
-    print(f" group_id: {st.session_state['group_id']}, groupName:{topic}")    
+        st.rerun()  
     st.page_link("./pages/UserMain.py", label="會員主頁")
     st.page_link("./pages/UserQuestionLobby.py", label="提問大廳")
 
@@ -32,7 +31,7 @@ def authenticated_nav_info():
     """
     已經登入後顯示用戶的屬性設定
     """
-    print(st.session_state['user_info'])
+    
     st.session_state['show_user_form'] = True
     if st.session_state.get('show_user_form', False):
         with st.sidebar.form(key='user_info_form'):
@@ -58,7 +57,6 @@ def authenticated_nav_info():
                 st.session_state['profession'] = role
                 st.session_state['goal'] = goal
                 st.success('資料已提交')
-                print(sql.fetch_user_info)
                 sql.update_user_info(user_id=st.session_state['user_id'], username=username, domain=domain, role=role, goal=goal)
 
 

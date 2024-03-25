@@ -70,7 +70,7 @@ with add_materials_cols[1]:
         # key=files_key,
         accept_multiple_files=True, 
         label_visibility="collapsed")
-    print(files)
+    
 
 with add_materials_cols[0]:
     button_key = f"{bookclub_id}-materials-btn"
@@ -79,7 +79,6 @@ with add_materials_cols[0]:
                                  use_container_width=True)
     remove_materials = st.button(":red[刪除所有教材]", use_container_width=True)
         
-print(button_materials)
 
 if remove_materials:
     target_folder = folder_path(bookclub_id)
