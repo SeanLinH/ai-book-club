@@ -22,18 +22,19 @@ def insert_user(user_id, pwd,email, name):
         return False, e
 
 ### 新增問題到叢集裡
-def insert_qst(qst_text, ask_user, state='待解決'):
+def insert_qst(group_id, qst_text, ask_user, state='待解決'):
     conn = sqlite3.connect('src/db/database.db')
     c = conn.cursor()
     qst_id = str(uuid.uuid4())
     try:
-        c.execute("INSERT INTO question_cluster (qst_id, qst_text, ask_user, state) VALUES (?, ?, ?, ?);", (qst_id, qst_text, ask_user, state))
+        c.execute("INSERT INTO question_cluster ( qst_id, group_id, qst_text, ask_user, state) VALUES (?, ?, ?, ?, ?);", (qst_id, group_id, qst_text, ask_user, state))
         conn.commit()
         print("Command executed successfully")
+        conn.close()
     except Exception as e:
         print("Update Failed")
         print(e)
-    conn.close()
+        conn.close()
 
 ### 新增專家回覆
 def insert_expert_answer(qst_id, expert_user, expert_response):
@@ -259,13 +260,10 @@ def fetch_user_qst(user_id):
     return questions
 
 ### 抓取群組問題
-def fetch_group_qst(state=None):
+def fetch_group_qst(group_id):
     conn = sqlite3.connect('src/db/database.db')
     c = conn.cursor()
-    if state:
-        c.execute("SELECT qst_id, qst_text FROM question_cluster WHERE state = ?;", (state,))
-    else:
-        c.execute("SELECT qst_id, qst_text FROM question_cluster;")
+    c.execute("SELECT ask_user, qst_text FROM question_cluster WHERE group_id = ?;", (group_id,))
     questions = c.fetchall()
     conn.close()
     return questions

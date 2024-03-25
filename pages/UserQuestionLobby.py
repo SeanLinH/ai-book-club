@@ -3,6 +3,7 @@ import uuid
 from typing import *
 import openai
 import os
+import sql
 
 from sidebar_navigators import \
     navigators_generator, \
@@ -195,29 +196,33 @@ for key in st.session_state.keys():
 #             st.session_state["bookclub_info"][bookclub_name][2],
 #         )
 
+# if 'questions_list' not in st.session_state:
+st.session_state['questions_list'] = []
 
 topic = st.session_state['topic']
 if topic =="":
     st.switch_page("./pages/UserMain.py")
 
 
+
 st.title(topic)
 
 # 問題輸入
 user_question = st.text_input("請輸入你的問題")
-
-
+qst_list = sql.fetch_group_qst(st.session_state['group_id'])
+for _,qst in qst_list: 
+    st.session_state['questions_list'].append(qst)
+summit = st.button("提交問題")
 
 # 問題提交按鈕
-if st.button('提交問題'):
+if summit: #st.button('提交問題'):
     # 暫時以列表形式保存問題（實際應用中應該保存到數據庫）
-    if 'questions_list' not in st.session_state:
-        st.session_state['questions_list'] = []
-    
     if user_question == '':
         st.warning("請輸入問題")
-    if user_question not in st.session_state['questions_list']:
+    elif user_question not in st.session_state['questions_list']:
         st.session_state['questions_list'].append(user_question)
+        sql.insert_qst(group_id=st.session_state['group_id'], qst_text=user_question, ask_user=st.session_state['user_id'])
+        st.success("已提交")
     else:
         st.warning("這個問題已經提交過了")
 
@@ -229,15 +234,15 @@ st.markdown(f"""
 question_num = 0
 # 顯示問題列表
 if 'questions_list' in st.session_state:
-    for question in st.session_state['questions_list']:
+    
+    for ask_user, qst_text in sql.fetch_group_qst(st.session_state['group_id']):
         col1, col2, col3 = st.columns([1,2,1]) # 調整列的寬度比例
         question_num += 1
         col1.text(str(question_num))
-        col2.write(question)
-        # st.text(question)
-        print(question)
-        if col3.button('回答', key=question):
-            print('hhihihi')
+        col2.write(f'🙋‍♂️{ask_user} : {qst_text}')
+        
+
+        if col3.button('回答', key=f'{question_num}-qst-btn'):
             # 使用OpenAI API獲取答案
             stream = openai.chat.completions.create(
                 model="gpt-4-1106-preview", 
@@ -284,6 +289,6 @@ with st.sidebar:
 ## TESTING COMPONENTS
 #
 
-on_toggle_btn = st.toggle(":red[See Session state]")
-if on_toggle_btn:
-    st.write(f"Now session state is: :red[{st.session_state}]")
+# on_toggle_btn = st.toggle(":red[See Session state]")
+# if on_toggle_btn:
+#     st.write(f"Now session state is: :red[{st.session_state}]")
