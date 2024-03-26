@@ -2,7 +2,8 @@ import streamlit as st
 from sidebar_navigators import \
     navigators_generator, \
     navigators_logout_generator
-
+import time
+import sql
 #
 ## Session state
 #
@@ -17,19 +18,27 @@ permissible_keys = {
     "user_email",
     "topic"
 }
-
-for key in st.session_state.keys():
-    if key not in permissible_keys:
-        st.session_state.pop(key)
-
-
 if "user_info" not in st.session_state:
+    user_info = sql.fetch_user_info(st.session_state["user_id"])
     st.session_state["user_info"] = {
-        "user_name": st.session_state["user_id"],
-        "domain": "智慧製造",
-        "role": "AI工程師",
-        "goal": "我希望可以增進自己的知識水平"
+        "user_name": user_info[0][0],
+        "domain": user_info[0][1],
+        "role": user_info[0][2],
+        "goal": user_info[0][3]
     }
+
+# for key in st.session_state.keys():
+#     if key not in permissible_keys:
+#         st.session_state.pop(key)
+
+for key in permissible_keys:
+    if key not in st.session_state.keys():
+        st.session_state[key] = [""]
+if st.session_state['user'] == [""]:
+    st.session_state['user'] = False
+    st.switch_page("./pages/Login.py")
+
+
 
 #
 ## Meta
@@ -70,8 +79,7 @@ st.markdown("""# AI智能讀書會介紹
 
 **讓我們攜手共創知識的未來。**
 """)
-
-
+#
 ## Sidebar
 #
 

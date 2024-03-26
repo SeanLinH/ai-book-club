@@ -4,7 +4,7 @@ from typing import *
 import openai
 import os
 import sql
-
+from api.ChatGPT import ans_question
 from sidebar_navigators import \
     navigators_generator, \
     navigators_logout_generator
@@ -23,9 +23,28 @@ permissible_keys = {
     "questions_list"
 }
 
-for key in st.session_state.keys():
-    if key not in permissible_keys:
-        st.session_state.pop(key)
+# for key in st.session_state.keys():
+#     if key not in permissible_keys:
+#         st.session_state.pop(key)
+
+for key in permissible_keys:
+    if key not in st.session_state.keys():
+        st.session_state[key] = [""]
+if st.session_state['user'] == [""]:
+    st.session_state['user'] = False
+    st.switch_page("./pages/Login.py")
+    
+st.set_page_config(
+    page_title="Ex-stream-ly Cool App",
+    page_icon="🧊",
+    layout="wide",
+    initial_sidebar_state="expanded",
+    # menu_items={
+    #     'Get Help': 'https://www.extremelycoolapp.com/help',
+    #     'Report a bug': "https://www.extremelycoolapp.com/bug",
+    #     'About': "# This is a header. This is an *extremely* cool app!"
+    # }
+)
 
 
 
@@ -196,8 +215,10 @@ for key in st.session_state.keys():
 #             st.session_state["bookclub_info"][bookclub_name][2],
 #         )
 
-# if 'questions_list' not in st.session_state:
+
 st.session_state['questions_list'] = []
+for _,_,qst_text in sql.fetch_group_qst(st.session_state['group_id']):
+    st.session_state['questions_list'].append(qst_text)
 
 topic = st.session_state['topic']
 if topic =="":
@@ -208,10 +229,7 @@ if topic =="":
 st.title(topic)
 
 # 問題輸入
-user_question = st.text_input("請輸入你的問題")
-qst_list = sql.fetch_group_qst(st.session_state['group_id'])
-for _,qst in qst_list: 
-    st.session_state['questions_list'].append(qst)
+user_question = st.text_input("請輸入你的問題", value="")
 summit = st.button("提交問題")
 
 # 問題提交按鈕
@@ -223,6 +241,17 @@ if summit: #st.button('提交問題'):
         st.session_state['questions_list'].append(user_question)
         sql.insert_qst(group_id=st.session_state['group_id'], qst_text=user_question, ask_user=st.session_state['user_id'])
         st.success("已提交")
+        stream = ans_question(topic, user_question, st.session_state['user_id'])
+        container = st.empty()
+        text = ""
+        n = 0
+        for chunk in stream:
+            n += 1
+            if chunk.choices[0].delta.content is not None:
+                if (n % 40) == 0:
+                    text += "\n"
+                text += chunk.choices[0].delta.content
+                container.text(text)
     else:
         st.warning("這個問題已經提交過了")
 
@@ -232,40 +261,25 @@ st.markdown(f"""
 
 """)
 question_num = 0
+
 # 顯示問題列表
 if 'questions_list' in st.session_state:
     
-    for ask_user, qst_text in sql.fetch_group_qst(st.session_state['group_id']):
-        col1, col2, col3 = st.columns([1,2,1]) # 調整列的寬度比例
+    for qst_id, ask_user, qst_text in sql.fetch_group_qst(st.session_state['group_id']):
+        answers = sql.fetch_qst_ans(qst_id)
+        col1, col2, col3 = st.columns([1,6,1]) # 調整列的寬度比例
         question_num += 1
         col1.text(str(question_num))
+        if col1.button(":red[刪除問題]", key=f'{question_num}_delete'):
+            sql.drop_qst(qst_id)
+            st.rerun()
         col2.write(f'🙋‍♂️{ask_user} : {qst_text}')
-        
-
-        if col3.button('回答', key=f'{question_num}-qst-btn'):
+        ans_btn = col3.button(f'智慧引導', key=f'{question_num}_ans')
+        if ans_btn:
+            # st.session_state[f'{question_num}_ans'] = True
             # 使用OpenAI API獲取答案
-            stream = openai.chat.completions.create(
-                model="gpt-4-1106-preview", 
-                messages=[
-                    {
-                    "role": "system",
-                    "content": f"""You are a professional AI expert. If I ask you question related to math, AI, DS, DL, ML, you can answer them from a professional perspective. You can choose to search online to get more accurate information.  If you feel that the question I asked may not be so important, or there are other more important questions that I may not understand, you can try to guide me to further understand the relevant technical knowledge. 
-                    [INST]Rule:
-                    1. you always follow user's language type.
-                    2. you always be kind.
-                    3. If you don't know the question, you should identify the user's qeustion.
-                    4. If you ensure that the user's question is not an knowledge question, you should guide the user to ask questions related to the {title}. and you only reply simple conclusion within 1 sentence. For example, "I think the most important thing is to understand the core issues."
-                    5. You should not answer questions that are irrelevant to the {title}. Instead, you should ask rhetorical questions to guide users to think about the core issues.
-                    6. Do not use Simplified Chinese. [/INST]"""
-                    },
-                    {
-                        "role": "user",
-                        "content": f"Please answer question '{question}'. Then, give me an example."
-                    }  
-                ],
-                max_tokens=500,
-                stream=True)
-            container = st.empty()
+            stream = ans_question(topic, qst_text, st.session_state['user_id'])
+            container = col2.empty()
             text = ""
             n = 0
             for chunk in stream:
@@ -275,6 +289,20 @@ if 'questions_list' in st.session_state:
                         text += "\n"
                     text += chunk.choices[0].delta.content
                     container.text(text)
+        
+        expert_ans = col2.text_area(" ",placeholder="專家回答", key=f'{question_num}_expert',label_visibility="collapsed")
+        for expertName, expertText in answers:
+            col2.write(f'🧐{expertName} : {expertText}')
+
+        if col3.button('提交', key=f'{question_num}_submit'):
+            sql.insert_expert_answer(qst_id,st.session_state['group_id'], st.session_state['user_id'], expert_ans)
+            col2.write(f'🧐{st.session_state["user_id"]} : {expert_ans}')
+            
+        st.write('---')
+    
+
+        
+
 #
 ## Sidebar
 #

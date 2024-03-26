@@ -2,6 +2,7 @@ import streamlit as st
 import time
 import sql
 
+
 def authenticated_nav_user(expanded):
     """
     已經登入後的 `使用者` 導航欄位顯示
@@ -30,20 +31,20 @@ def authenticated_nav_info():
     """
     已經登入後顯示用戶的屬性設定
     """
-    
+
     st.session_state['show_user_form'] = True
     if st.session_state.get('show_user_form', False):
         with st.sidebar.form(key='user_info_form'):
             st.write("用戶資料表單")
-            username = st.text_input("你的名字", value=st.session_state['user_id'],placeholder='王大強')
-            domain = st.text_input("你的專業領域是什麼？", placeholder='智慧製造')
-            role = st.selectbox("你在這個讀書會擔任什麼角色?", ['UI/UX設計師','前端工程師', '後端工程師', 'Data Scientist', 'AI工程師'])
-            goal = st.text_area("你的學習目標?", placeholder='我希望可以成為領域專家...')
+            username = st.text_input("你的名字", value=st.session_state['user_info'].get('user_name'),placeholder='王大強')
+            domain = st.text_input("你的專業領域是什麼？", value=st.session_state['user_info'].get('domain') ,placeholder='智慧製造')
+            role = st.selectbox(f"你在這個讀書會擔任什麼角色?\n\n你目前是 :red[{st.session_state['user_info'].get('role')}]", ['UI/UX設計師','前端工程師', '後端工程師', 'Data Scientist', 'AI工程師'])
+            goal = st.text_area("你的學習目標?",value=st.session_state['user_info'].get('goal'), placeholder='我希望可以成為領域專家...')
             submit_button = st.form_submit_button('提交')
             
             if submit_button:
                 if username == '':
-                    username='王大強'
+                    username=st.session_state['user_id']
                 if domain == '':
                     domain = '知識水平在大學的一般大眾'
                 if role == '':
@@ -51,12 +52,18 @@ def authenticated_nav_info():
                 if goal == '':
                     goal = '增進自己的知識水平'
 
-                st.session_state['username'] = username
-                st.session_state['domain'] = domain
-                st.session_state['profession'] = role
-                st.session_state['goal'] = goal
+
+                st.session_state["user_info"] = {
+                "user_name": username,
+                "domain": domain,
+                "role": role,
+                "goal": goal
+                }
+                print(st.session_state['user_id'], username,domain,role,goal)
+                sql.update_user_info(user_id=st.session_state['user_id'], name=username, domain=domain, role=role, goal=goal, tag="")
                 st.success('資料已提交')
-                sql.update_user_info(user_id=st.session_state['user_id'], username=username, domain=domain, role=role, goal=goal)
+                time.sleep(2)
+                st.rerun()
 
 
 def authenticated_nav_manager(expanded):

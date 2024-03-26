@@ -39,6 +39,12 @@ for key in st.session_state.keys():
     if key not in permissible_keys:
         st.session_state.pop(key)
 
+for key in permissible_keys:
+    if key not in st.session_state.keys():
+        st.session_state[key] = [""]
+if st.session_state['user'] == [""]:
+    st.session_state['user'] = False
+    st.switch_page("./pages/Login.py")
 
 #
 ## Meta

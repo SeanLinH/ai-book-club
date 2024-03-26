@@ -37,12 +37,12 @@ def insert_qst(group_id, qst_text, ask_user, state='待解決'):
         conn.close()
 
 ### 新增專家回覆
-def insert_expert_answer(qst_id, expert_user, expert_response):
+def insert_expert_answer(qst_id, group_id, expert_user, expert_response):
     conn = sqlite3.connect('src/db/database.db')
     c = conn.cursor()
     ans_id = str(uuid.uuid4())
     try:
-        c.execute("INSERT INTO expert_answer (ans_id, qst_id, expert_user, expert_response) VALUES (?, ?, ?, ?);", (ans_id, qst_id, expert_user, expert_response))
+        c.execute("INSERT INTO expert_answer (ans_id, qst_id, group_id, expert_user, expert_response) VALUES (?, ?, ?, ?, ?);", (ans_id, qst_id,group_id, expert_user, expert_response))
         conn.commit()
         print("Command executed successfully")
     except Exception as e:
@@ -152,11 +152,11 @@ def join_user_group(user_id, group_id):
             print(e)
             conn.close()
             return f'加入失敗:{e}'
-
+### 退出群組
 def drop_user_group(user_id, group_name, group_id):
     conn = sqlite3.connect('src/db/database.db')
     c = conn.cursor()
-    # 抓取用戶user_id 的群組id
+
     group_list, group_id_lst = fetch_user_group(user_id)
     if group_list[0] == "":
         return '此用戶尚未加入任何群組'
@@ -229,11 +229,11 @@ def update_user_group(user_id, group_name, group_id):
 
 
 ### update user 的domain, role, goal,tag
-def update_user_info(user_id, domain, role, goal, tag):
+def update_user_info(user_id, name, domain, role, goal, tag):
     conn = sqlite3.connect('src/db/database.db')
     c = conn.cursor()
     try:
-        c.execute("UPDATE user SET domain = ?, role = ?, goal = ?, tag = ? WHERE user_id = ?;", (domain, role, goal, tag, user_id))
+        c.execute("UPDATE user SET name = ?,domain = ?, role = ?, goal = ?, tag = ? WHERE user_id = ?;", (name, domain, role, goal, tag, user_id))
         conn.commit()
         print("Command executed successfully")
     except Exception as e:
@@ -245,10 +245,15 @@ def update_user_info(user_id, domain, role, goal, tag):
 def fetch_user_info(user_id):
     conn = sqlite3.connect('src/db/database.db')
     c = conn.cursor()
-    c.execute("SELECT name, domain, role, goal, tag FROM user WHERE user_id = ?;", (user_id,))
-    user_info = c.fetchall()
-    conn.close()
-    return user_info
+    try:
+        c.execute("SELECT name, domain, role, goal, tag FROM user WHERE user_id = ?;", (user_id,))
+        user_info = c.fetchall()
+        conn.close()
+        return user_info
+    except Exception as e:
+        print(e)
+        conn.close()
+        return [(None,None,None,None,None)]
 
 ### 抓取用戶問題
 def fetch_user_qst(user_id):
@@ -263,7 +268,48 @@ def fetch_user_qst(user_id):
 def fetch_group_qst(group_id):
     conn = sqlite3.connect('src/db/database.db')
     c = conn.cursor()
-    c.execute("SELECT ask_user, qst_text FROM question_cluster WHERE group_id = ?;", (group_id,))
+    group_id = str(group_id)
+    c.execute("SELECT qst_id, ask_user, qst_text FROM question_cluster WHERE group_id = ?;", (group_id,))
     questions = c.fetchall()
     conn.close()
     return questions
+
+### 抓取群組的回覆
+def fetch_group_ans(group_id):
+    conn = sqlite3.connect('src/db/database.db')
+    c = conn.cursor()
+    group_id = str(group_id)
+    try:
+        c.execute("SELECT qst_id, expert_user, expert_response FROM expert_answer WHERE group_id = ?;", (group_id,))
+        answers = c.fetchall()
+        conn.close()
+        return answers
+    except Exception as e:
+        print(e)
+        conn.close()
+        return []
+### 抓取特定問題的回答列表
+def fetch_qst_ans(qst_id):
+    conn = sqlite3.connect('src/db/database.db')
+    c = conn.cursor()
+    try:
+        c.execute("SELECT expert_user, expert_response FROM expert_answer WHERE qst_id = ?;", (qst_id,))
+        answers = c.fetchall()
+        conn.close()
+        return answers
+    except Exception as e:
+        print(e)
+        conn.close()
+        return [(None,None)]
+
+def drop_qst(qst_id):
+    conn = sqlite3.connect('src/db/database.db')
+    c = conn.cursor()
+    try:
+        c.execute("DELETE FROM question_cluster WHERE qst_id = ?;", (qst_id,))
+        conn.commit()
+        print("Command executed successfully")
+    except Exception as e:
+        print("Update Failed")
+        print(e)
+    conn.close()
