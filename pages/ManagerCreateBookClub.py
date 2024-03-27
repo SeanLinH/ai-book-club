@@ -9,7 +9,20 @@ import string
 from io import StringIO
 import pandas as pd
 import os
-# 生成一個隨機的8個英文字母的字符串
+
+## config
+
+st.set_page_config(
+    page_title="AI智能讀書會-建立群組",
+    page_icon="🧊",
+    layout="wide",
+    initial_sidebar_state="expanded",
+    # menu_items={
+    #     'Get Help': 'https://www.extremelycoolapp.com/help',
+    #     'Report a bug': "https://www.extremelycoolapp.com/bug",
+    #     'About': "# This is a header. This is an *extremely* cool app!"
+    # }
+)
 
 #
 ## Session state
@@ -46,13 +59,12 @@ if st.session_state['user'] == [""]:
     st.session_state['user'] = False
     st.switch_page("./pages/Login.py")
 
+
 #
 ## Meta
 #
 
-st.set_page_config(
-    page_title="智能讀書會-新建讀書會"
-)
+
 bookclub_name = st.session_state['topic']
 bookclub_id = st.session_state['group_id']
 #

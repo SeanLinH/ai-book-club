@@ -9,18 +9,17 @@ def authenticated_nav_user(expanded):
     """
 
     group_list = st.session_state['group_list']
-    topic = st.selectbox("選擇群組", group_list)
+    topic = st.selectbox(f"選擇群組", group_list)
     group_id = group_list.index(topic)
     if topic != st.session_state['topic']:
         st.session_state['topic'] = topic
         st.session_state['group_id'] = st.session_state['group_id_list'][group_id]
-        st.rerun()  
+        st.rerun()
+    users = sql.fetch_group_users(st.session_state['group_id'])
     st.info(f'群組編號: :red[{st.session_state["group_id"]}]')
-    st.page_link("./pages/UserMain.py", label="會員說明")
-    st.page_link("./pages/UserQuestionLobby.py", label="提問大廳")
-
-    
-
+    st.write(f"目前有 :red[{len(users)}]位成員")
+    st.page_link("./pages/UserMain.py", label="💎會員說明")
+    st.page_link("./pages/UserQuestionLobby.py", label="🙋提問大廳")
 
     # with st.expander("Book Club User", expanded=expanded):
     #     st.page_link("./pages/UserQuestions.py", label="我的提問")
@@ -35,7 +34,7 @@ def authenticated_nav_info():
     st.session_state['show_user_form'] = True
     if st.session_state.get('show_user_form', False):
         with st.sidebar.form(key='user_info_form'):
-            st.write("用戶資料表單")
+            st.write("個人化回應表單")
             username = st.text_input("你的名字", value=st.session_state['user_info'].get('user_name'),placeholder='王大強')
             domain = st.text_input("你的專業領域是什麼？", value=st.session_state['user_info'].get('domain') ,placeholder='智慧製造')
             role = st.selectbox(f"你在這個讀書會擔任什麼角色?\n\n你目前是 :red[{st.session_state['user_info'].get('role')}]", ['UI/UX設計師','前端工程師', '後端工程師', 'Data Scientist', 'AI工程師'])
@@ -59,7 +58,6 @@ def authenticated_nav_info():
                 "role": role,
                 "goal": goal
                 }
-                print(st.session_state['user_id'], username,domain,role,goal)
                 sql.update_user_info(user_id=st.session_state['user_id'], name=username, domain=domain, role=role, goal=goal, tag="")
                 st.success('資料已提交')
                 time.sleep(2)
@@ -72,7 +70,7 @@ def authenticated_nav_manager(expanded):
     """
     # with st.expander("資料上傳", expanded=expanded):
     #     st.page_link("./pages/ManagerMain.py", label="更新讀書會教材")
-    st.page_link("./pages/ManagerCreateBookClub.py", label=":orange[上傳教材/創建群組]")
+    st.page_link("./pages/ManagerCreateBookClub.py", label=":orange[☁️上傳教材/創建群組]")
 
 def login_btn():
     """登入頁面跳轉按鈕"""

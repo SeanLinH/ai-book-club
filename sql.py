@@ -293,15 +293,33 @@ def fetch_qst_ans(qst_id):
     conn = sqlite3.connect('src/db/database.db')
     c = conn.cursor()
     try:
-        c.execute("SELECT expert_user, expert_response FROM expert_answer WHERE qst_id = ?;", (qst_id,))
+        c.execute("SELECT ans_id, expert_user, expert_response FROM expert_answer WHERE qst_id = ?;", (qst_id,))
         answers = c.fetchall()
         conn.close()
         return answers
     except Exception as e:
         print(e)
         conn.close()
-        return [(None,None)]
+        return [(None,None,None)]
 
+### 抓取群組的人數和用戶名單
+def fetch_group_users(group_id):
+    conn = sqlite3.connect('src/db/database.db')
+    c = conn.cursor()
+    group_id = str(group_id)
+    print(group_id)
+    try:
+        c.execute("SELECT name FROM user WHERE group_id LIKE ?;", (f'%{group_id}%',))
+        users = c.fetchall()
+        conn.close()
+        print("Command executed successfully")
+        return users
+    except Exception as e:
+        print(e)
+        conn.close()
+        return []
+
+### 刪除問題
 def drop_qst(qst_id):
     conn = sqlite3.connect('src/db/database.db')
     c = conn.cursor()
@@ -313,3 +331,17 @@ def drop_qst(qst_id):
         print("Update Failed")
         print(e)
     conn.close()
+
+### 刪除專家回答
+def drop_expert_ans(ans_id):
+    conn = sqlite3.connect('src/db/database.db')
+    c = conn.cursor()
+    try:
+        c.execute("DELETE FROM expert_answer WHERE ans_id = ?;", (ans_id,))
+        conn.commit()
+        print("Command executed successfully")
+    except Exception as e:
+        print("Update Failed")
+        print(e)
+    conn.close()
+
