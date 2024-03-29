@@ -95,8 +95,8 @@ venv.bak/
 log/
 
 # Database file
-# *.db
-
+*.db
+src/data/
 # Spyder project settings
 .spyderproject
 .spyproject
