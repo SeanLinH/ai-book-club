@@ -7,6 +7,8 @@ import sql
 
 ## config
 
+
+
 st.set_page_config(
     page_title="AI智能讀書會",
     page_icon="🧊",
@@ -18,8 +20,6 @@ st.set_page_config(
     #     'About': "# This is a header. This is an *extremely* cool app!"
     # }
 )
-
-
 #
 ## Session state
 #
@@ -61,10 +61,13 @@ if st.session_state['user_info'] == [""]:
 #
 ## Meta
 #
-
-# 頁面標題開頭
-# st.markdown(f'# Hi! {st.session_state["user_info"]["user_name"]}')
-
+_test_name = {
+    "提問大廳" : "./pages/UserQuestionLobby.py", 
+    "上傳文件" : "./pages/ManagerCreateBookClub.py"
+}
+#
+## Session state
+#
 
 # 我的學習歷程
 st.markdown("""## AI智能讀書會介紹

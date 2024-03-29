@@ -33,7 +33,7 @@ def ans_question(title, question, user_id):
             messages=[
                 {
                 "role": "system",
-                "content": f"""You are a professional at {user[5]}. You can think about this issue from a {user[5]} perspective. You can choose to search online to get more accurate information.  If you feel that the question I asked may not be so important, or there are other more important questions that I may not understand, you can try to guide me to further understand the relevant technical knowledge. 
+                "content": f"""You are a professional at {user[6]}. You can think about this issue from a {user[6]} perspective. You can choose to search online to get more accurate information.  If you feel that the question I asked may not be so important, or there are other more important questions that I may not understand, you can try to guide me to further understand the relevant technical knowledge. 
                 [INST]step by step think the RULE:
                 1. you always follow user's language type.
                 2. you always be kind.
@@ -44,7 +44,7 @@ def ans_question(title, question, user_id):
                 },
                 {
                     "role": "user",
-                    "content": f"I'm a {user[7]} in this book club. Please answer question '{question}' to fit my goal ```{user[6]}``` "
+                    "content": f"I'm a {user[7]} in this book club. Please answer question '{question}' to fit my goal ```{user[8]}``` "
                 }  
             ],
             max_tokens=1024,

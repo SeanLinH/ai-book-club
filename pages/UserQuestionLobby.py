@@ -57,7 +57,7 @@ if topic =="":
 
 
 
-st.title(topic)
+st.write(f'## {topic}')
 
 # 問題輸入
 user_question = st.text_input("請輸入你的問題", value="")

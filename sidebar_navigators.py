@@ -20,6 +20,7 @@ def authenticated_nav_user(expanded):
     st.write(f"目前有 :red[{len(users)}]位成員")
     st.page_link("./pages/UserMain.py", label="💎會員說明")
     st.page_link("./pages/UserQuestionLobby.py", label="🙋提問大廳")
+    st.page_link("./pages/group_note.py", label="📝群組筆記")
 
     # with st.expander("Book Club User", expanded=expanded):
     #     st.page_link("./pages/UserQuestions.py", label="我的提問")
