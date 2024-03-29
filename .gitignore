@@ -97,6 +97,7 @@ log/
 # Database file
 *.db
 src/data/
+
 # Spyder project settings
 .spyderproject
 .spyproject
