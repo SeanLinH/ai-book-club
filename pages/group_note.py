@@ -66,7 +66,7 @@ if topic =="":
 
 
 
-st.write(f'## {topic}')
+st.write(f'### 群組共編筆記({topic})')
 
 col1, col2, col3 = st.columns([7, 1, 1])
 if col2.button("編輯"):
@@ -78,6 +78,9 @@ if st.session_state['edit']:
 else:
     bookclub_id = st.session_state['group_id']
     path = folder_path(bookclub_id)
+    if not os.path.exists(f'{path}/note.md'):
+        with open(f'{path}/note.md', 'w') as f:
+            f.write("由此開始編輯群組筆記\n\n")
     content = open(f'{path}/note.md').read()
     st.markdown(content)
 
@@ -87,13 +90,8 @@ if col3.button("保存"):
     path = folder_path(bookclub_id)
     with open(f'{path}/note.md', 'w') as f:
         f.write(content)
+    st.session_state['content'] = content
     st.rerun()
-
-
-
-
-
-        
 
 #
 ## Sidebar

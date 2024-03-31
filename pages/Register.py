@@ -3,7 +3,7 @@ import time
 from sidebar_navigators import navigators_generator
 import sql
 import re
-
+from api import Mail
 #
 ## Session state
 #
@@ -57,7 +57,9 @@ with st.form(key="register_form"):
             # TODO: 這邊需要將用戶的輸入數據提交到數據庫中
             regist_done, regist_msg = sql.insert_user(account, password, email, account)
             if regist_done:
+                Mail.register_welcome(email)
                 st.success("註冊成功!")
+                
                 time.sleep(2)
                 st.switch_page("./pages/Login.py") 
             else:
