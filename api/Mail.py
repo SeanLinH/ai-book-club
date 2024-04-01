@@ -40,3 +40,40 @@ def register_welcome(mail):
   else:
       print("郵件傳送失敗!")
   smtp.quit()
+
+# 寄信給提問的人，內容需要有回答人的名字
+def send_email(mail, subject, content, answer_name=""):
+  MAIL_KEY = os.environ.get("MAIL_KEY")
+  print(MAIL_KEY)
+  html=f"""
+  <!doctype html>
+  <html>
+  <head>
+    <meta charset='utf-8'>
+    <title>{subject}</title>
+  </head>
+  <body>
+    {content}
+  </body>
+  </html>
+  """
+
+  mime=MIMEText(html, "html", "utf-8") #撰寫內文內容，以及指定格式為plain，語言為中文
+  mime["Subject"]=subject #撰寫郵件標題
+  mime["From"]="SageLink 智能讀書會" #撰寫你的暱稱或是信箱
+  mime["To"]=mail #撰寫你要寄的人
+  # mime["Cc
+  msg=mime.as_string() #將msg將text轉成str
+  smtp=smtplib.SMTP("mail.sentipal.live", 587)  #googl的ping
+  smtp.ehlo() #申請身分
+  smtp.starttls() #加密文件，避免私密信息被截取
+  smtp.login("support@sentipal.live", "bgad56j95m")
+  from_addr="support@sentipal.live"
+  to_addr=[mail]
+  status=smtp.sendmail(from_addr, to_addr, msg)
+  if status=={}:
+      print("郵件傳送成功!")
+  else:
+      print("郵件傳送失敗!")
+  smtp.quit()
+

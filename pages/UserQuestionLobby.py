@@ -9,6 +9,7 @@ from api.ChatGPT import ans_question
 from sidebar_navigators import \
     navigators_generator, \
     navigators_logout_generator
+from api import Mail
 
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 ## session state
@@ -101,10 +102,15 @@ if 'questions_list' in st.session_state:
         col1, col2, col3 = st.columns([1,6,1]) # 調整列的寬度比例
         question_num += 1
         col1.text(str(question_num))
+        ## 討論問題
+        if col1.button("討論",key=f'{question_num}_discuss'):
+            st.session_state['qst_text'] = qst_text
+            st.switch_page("./pages/ChatRoom.py")
+
         if col1.button(":red[刪除問題]", key=f'{question_num}_delete'):
             sql.drop_qst(qst_id)
             st.rerun()
-        col2.write(f'🙋‍♂️{ask_user} : {qst_text}')
+        col2.write(f'🙋‍♂️ :blue[{ask_user}] : {qst_text}')
         ans_btn = col3.button(f'智慧引導', key=f'{question_num}_ans')
         if ans_btn:
             # st.session_state[f'{question_num}_ans'] = True
@@ -131,12 +137,14 @@ if 'questions_list' in st.session_state:
                 col_2.warning("請輸入文字")
                 time.sleep(2)
                 st.rerun()
+            mail = sql.fetch_user_email(ask_user)
+            Mail.send_email(mail, f"{st.session_state['user_id']}回答了你的問題", f"你的問題 [<strong>{qst_text}</strong>] 已經有專家回答了，請查看")
             sql.insert_expert_answer(qst_id,st.session_state['group_id'], st.session_state['user_id'], expert_ans)
-            col_2.write(f'🧐{st.session_state["user_id"]} : {expert_ans}')
+            col_2.write(f'🧐 :blue[{st.session_state["user_info"]["user_name"]}] : {expert_ans}')
             st.rerun()
 
         for ans_id, expertName, expertText in answers:
-            col_2.write(f'🧐{expertName} : {expertText}')
+            col_2.write(f'🧐 :blue[{expertName}] : {expertText}')
             if col_3.button(":red[刪除回答]", key=f'{ans_id}_delete' ):
                 sql.drop_expert_ans(ans_id)
                 st.rerun()

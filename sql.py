@@ -255,6 +255,20 @@ def fetch_user_info(user_id):
         conn.close()
         return [(None,None,None,None,None)]
 
+### 抓取用戶的email
+def fetch_user_email(user_id):
+    conn = sqlite3.connect('src/db/database.db')
+    c = conn.cursor()
+    try:
+        c.execute("SELECT email FROM user WHERE user_id = ?;", (user_id,))
+        email = c.fetchone()
+        conn.close()
+        return email[0]
+    except Exception as e:
+        print(e)
+        conn.close()
+        return [(None,)]
+
 ### 抓取用戶問題
 def fetch_user_qst(user_id):
     conn = sqlite3.connect('src/db/database.db')
@@ -309,6 +323,8 @@ def fetch_group_users(group_id):
     group_id = str(group_id)
     print(group_id)
     try:
+        if group_id == "":
+            return []
         c.execute("SELECT name FROM user WHERE group_id LIKE ?;", (f'%{group_id}%',))
         users = c.fetchall()
         conn.close()

@@ -9,17 +9,22 @@ def authenticated_nav_user(expanded):
     """
 
     group_list = st.session_state['group_list']
+    
     topic = st.selectbox(f"選擇群組", group_list)
     group_id = group_list.index(topic)
     if topic != st.session_state['topic']:
         st.session_state['topic'] = topic
         st.session_state['group_id'] = st.session_state['group_id_list'][group_id]
         st.rerun()
+    if topic == "":
+        if st.button(":red[新建群組]"):
+            st.switch_page("./pages/ManagerCreateBookClub.py")
     users = sql.fetch_group_users(st.session_state['group_id'])
     st.info(f'群組編號: :red[{st.session_state["group_id"]}]')
     st.write(f"目前有 :red[{len(users)}]位成員")
     st.page_link("./pages/UserMain.py", label="💎會員說明")
     st.page_link("./pages/UserQuestionLobby.py", label="🙋提問大廳")
+    st.page_link("./pages/ChatRoom.py", label="💬討論區")
     st.page_link("./pages/group_note.py", label="📝群組筆記")
 
     # with st.expander("Book Club User", expanded=expanded):
