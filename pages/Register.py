@@ -66,7 +66,7 @@ with st.form(key="register_form"):
                 if regist_msg == "UNIQUE constraint failed: user.email":
                     st.error("email 已經被註冊過了")
                 elif regist_msg == "UNIQUE constraint failed: user.user_id":
-                    st.error("用戶名已經被註冊過了")
+                    st.error("該用戶名已經被註冊過了")
                 else:
                     st.error(f"註冊失敗，請稍後再試, {regist_msg}")
                 

@@ -42,7 +42,7 @@ for key in st.session_state.keys():
 
 
 st.markdown(f"""## AI智能讀書會平台介紹""")
-st.image("src/images/logo.png", width=400)
+st.image("src/images/logo.png", width=400, clamp=True)
 st.markdown(f"""
 ### 簡介
 AI智能讀書會是一個創新的學習共享平台，旨在促進知識的深度交流與協作學習。透過這個平台，用戶可以加入特定的學習群組，共同研究和討論學術論文或其他學習材料。本平台特色在於引入AI技術，以智能方式支持問題解答和內容理解，使學習過程更加高效、互動。

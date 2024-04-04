@@ -41,11 +41,11 @@ with st.container(border=True):
     login_check = st.button("登入", use_container_width=True)
     if login_check:
         if is_email_valid(account):
-            login, msg = sql.check_username(email=account, pwd=password)
-            st.session_state["user_id"] = account
+            login, user_id, msg = sql.check_username(email=account, pwd=password)
+            st.session_state["user_id"] = user_id
         else:
-            login, msg = sql.check_username(user_id=account, pwd=password)
-            st.session_state["user_id"] = account
+            login, user_id, msg = sql.check_username(user_id=account, pwd=password)
+            st.session_state["user_id"] = user_id
 
         if login:
             st.success(msg)

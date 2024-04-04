@@ -19,7 +19,7 @@ def insert_user(user_id, pwd,email, name):
         print("Update Failed")
         print(e)
         conn.close()
-        return False, e
+        return False, str(e)
 
 ### 新增問題到叢集裡
 def insert_qst(group_id, qst_text, ask_user, state='待解決'):
@@ -89,10 +89,10 @@ def check_username(user_id=None, email=None, pwd=None):
     conn.close()
     if user:
         if user[1] == pwd:
-            return True, "登入成功"
+            return True, user[0], "登入成功"
         return False, "請檢查帳號密碼是否正確"
     else:
-        return False, "此帳號尚未註冊，請先註冊。"
+        return False, "", "此帳號尚未註冊，請先註冊。"
 
 ### 抓取用戶的群組id 
 def fetch_user_group(user_id) -> list:

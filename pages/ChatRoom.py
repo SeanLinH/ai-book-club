@@ -115,12 +115,12 @@ if user_input:
 
 
 # Finally we display the chat history
-
 if st.session_state['generated']:
-
-    for i in range(len(st.session_state['generated']) -1, -1, -1):
-        message(st.session_state["generated"][i], key=str(i))
-        message(st.session_state["past"][i], is_user=True, key=str(i) + '_user')
+    
+    for i in range(len(st.session_state['generated'])):
+        message('sean:\n' +st.session_state["past"][i], is_user=True, allow_html=True, key=str(i) + '_user')
+        message('SageLink:\n' + st.session_state["generated"][i],allow_html=True, key=str(i))
+        
 
 
 
